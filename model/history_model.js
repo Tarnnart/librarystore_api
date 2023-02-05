@@ -11,7 +11,7 @@ const historySchema = mongoose.Schema({
   status: { type: String, enum: statusUser, default: 'Rent' },
   primaryIdBook: { type: String },
   idBook: { type: String },
-  nameBook: { type: String },
+  bookName: { type: String },
   dateRent: { type: Date, require: true, default: DateUse },
   dateEnd: { type: Date },
   penalty: { type: Number, default: 0 },

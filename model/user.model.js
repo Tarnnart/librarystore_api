@@ -8,7 +8,6 @@ const usersSchema = mongoose.Schema({
   lastname: { type: String, require: true },
   username: { type: String, unique: true },
   password: { type: String, require: true },
-  // dateUserRegistration: { type: Date, default: DateUse },
   token: {type: String},
   dateRegistration: { type: Date, default: DateUse }
 })

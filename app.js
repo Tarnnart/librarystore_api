@@ -4,6 +4,7 @@ require('./config/database').connect()
 
 const express = require('express')
 const User = require('./model/user.model')
+const Book = require('./model/book_model')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const auth = require('./middleware/auth')
@@ -94,5 +95,48 @@ app.post("/login", async (req, res) => {
 app.post('/nextpage', auth, (req, res) => {
     res.status(200).send('Welcome to my world')
 })
+
+app.post('/book/registration', async (req, res) => {
+    try {
+      // *** INPUT
+      console.log('req.body:', req.body)
+      const {
+        primaryIdBook,
+        idBook,
+        bookName,
+        dateRegistration,
+        writer,
+        publisher,
+        catagory,
+        status,
+        totalBook,
+      } = req.body
+  
+      if (!(primaryIdBook && idBook && bookName && writer && publisher && catagory && totalBook)) {
+        res.status(400).send('All required')
+    }
+
+    const oldBook = await Book.findOne({ idBook })
+
+    if (oldUser) {
+        return res.status(409).send('User alredy exist. Please login')
+    }
+      const bookRegistration = await new BookRegistration({
+        primaryIdBook,
+        idBook,
+        bookName,
+        dateRegistration,
+        writer,
+        publisher,
+        catagory,
+        status,
+        totalBook,
+      }).save()
+      return res.json('done') // Response message
+    } catch (e) {
+      console.log(e)
+      return res.json('failed') // Response message
+    }
+  })
 
 module.exports = app

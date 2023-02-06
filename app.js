@@ -199,6 +199,55 @@ app.post('/book/data', async (req, res) => {
     }
   })
 
+// History
+app.post('/history', async (req, res) => {
+  try {
+    // *** INPUT
+    console.log('req.body:', req.body)
+    const { username, primaryIdBook, bookName, idBook} = req.body
+       let Historyobj = {}
+          if(username){
+              bookHistoryobj = {
+              ...Historyobj,
+              username,
+              }
+          }
+          if(primaryIdBook){
+              bookHistoryobj = {
+              ...Historyobj,
+              primaryIdBook,
+              }
+          }
+          if(bookName){
+              bookHistoryobj = {
+              ...Historyobj,
+              bookName,
+              }
+          }
+          if(idBook){
+              bookHistoryobj = {
+              ...Historyobj,
+              idBook,
+              }
+          }
+         
+    if (!(username || primaryIdBook || bookName || idBook)) {
+      res.status(410).send('Not Found')
+  }
+
+  const bookData = await History.find(Historyobj).exec()
+
+  if (!bookData) {
+      return res.status(411).send('Please try again')
+  }
+
+      // *** OUTPUT
+  return res.json({ success: true, data: bookData })
+  } catch (e) {
+    return res.json({ error: String(e) })
+  }
+})
+
 function calcDate(dateRent, dateReturn) {
   /*
   * calcDate() : Calculates the difference between two dates

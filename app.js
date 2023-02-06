@@ -38,12 +38,12 @@ app.post("/register", async (req, res) => {
         encryptedPassword = await bcrypt.hash(password, 1)
 
         // Create user in our database
-        // const user = await User.create({
-        //     firstname,
-        //     lastname,
-        //     username,
-        //     password: encryptedPassword
-        // })
+        const user = await User.create({
+            firstname,
+            lastname,
+            username,
+            password: encryptedPassword
+        })
 
         // Create token
         const token = jwt.sing(
@@ -153,10 +153,10 @@ app.post('/book/data', async (req, res) => {
       console.log('req.body:', req.body)
       const { primaryIdBook, bookName, idBook, writer} = req.body
          let bookHistoryobj = {
-            primaryIdBook,
-            bookName,
-            idBook,
-            writer
+            // primaryIdBook,
+            // bookName,
+            // idBook,
+            // writer
         }
             if(primaryIdBook){
                 bookHistoryobj = {
@@ -186,20 +186,9 @@ app.post('/book/data', async (req, res) => {
         res.status(404).send('Not Found')
     }
 
-    const bookData = await History.findOne({
-        firstname,
-        lastname,
-        username,
-        status,
-        primaryIdBook,
-        idBook,
-        bookName,
-        dateRent,
-        dateEnd,
-        penalty
-    }).exec()
+    const bookData = await Book.find(bookHistoryobj).exec()
 
-    if (bookData) {
+    if (!bookData) {
         return res.status(405).send('Please try again')
     }
 
@@ -270,7 +259,7 @@ function calcDate(dateRent, dateReturn) {
 }
 
 // Rent
-// Compass historydatas
+// Compass historydata
 app.post('/book/rent', async (req, res) => {
     console.log('req.body:', req.body)
     const {
@@ -285,7 +274,7 @@ app.post('/book/rent', async (req, res) => {
       firstname: user.firstname,
       lastname: user.lastname,
       username: user.username,
-      // status: book.status,
+      status: book.status,
       primaryIdBook: book.primaryIdBook,
       idBook: book.idBook,
       bookName: book.bookName,

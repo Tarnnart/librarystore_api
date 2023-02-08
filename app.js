@@ -152,12 +152,7 @@ app.post('/book/data', async (req, res) => {
       // *** INPUT
       console.log('req.body:', req.body)
       const { primaryIdBook, bookName, idBook, writer} = req.body
-         let bookHistoryobj = {
-            // primaryIdBook,
-            // bookName,
-            // idBook,
-            // writer
-        }
+         let bookHistoryobj = {}
             if(primaryIdBook){
                 bookHistoryobj = {
                 ...bookHistoryobj,
@@ -186,9 +181,20 @@ app.post('/book/data', async (req, res) => {
         res.status(404).send('Not Found')
     }
 
-    const bookData = await Book.find(bookHistoryobj).exec()
+    const bookData = await History.findOne({
+        firstname,
+        lastname,
+        username,
+        status,
+        primaryIdBook,
+        idBook,
+        bookName,
+        dateRent,
+        dateEnd,
+        penalty
+    }).exec()
 
-    if (!bookData) {
+    if (bookData) {
         return res.status(405).send('Please try again')
     }
 
@@ -198,55 +204,6 @@ app.post('/book/data', async (req, res) => {
       return res.json({ error: String(e) })
     }
   })
-
-// History
-app.post('/history', async (req, res) => {
-  try {
-    // *** INPUT
-    console.log('req.body:', req.body)
-    const { username, primaryIdBook, bookName, idBook} = req.body
-       let Historyobj = {}
-          if(username){
-              bookHistoryobj = {
-              ...Historyobj,
-              username,
-              }
-          }
-          if(primaryIdBook){
-              bookHistoryobj = {
-              ...Historyobj,
-              primaryIdBook,
-              }
-          }
-          if(bookName){
-              bookHistoryobj = {
-              ...Historyobj,
-              bookName,
-              }
-          }
-          if(idBook){
-              bookHistoryobj = {
-              ...Historyobj,
-              idBook,
-              }
-          }
-         
-    if (!(username || primaryIdBook || bookName || idBook)) {
-      res.status(410).send('Not Found')
-  }
-
-  const bookData = await History.find(Historyobj).exec()
-
-  if (!bookData) {
-      return res.status(411).send('Please try again')
-  }
-
-      // *** OUTPUT
-  return res.json({ success: true, data: bookData })
-  } catch (e) {
-    return res.json({ error: String(e) })
-  }
-})
 
 function calcDate(dateRent, dateReturn) {
   /*
@@ -308,7 +265,7 @@ function calcDate(dateRent, dateReturn) {
 }
 
 // Rent
-// Compass historydata
+// Compass historydatas
 app.post('/book/rent', async (req, res) => {
     console.log('req.body:', req.body)
     const {
@@ -323,7 +280,7 @@ app.post('/book/rent', async (req, res) => {
       firstname: user.firstname,
       lastname: user.lastname,
       username: user.username,
-      status: book.status,
+      // status: book.status,
       primaryIdBook: book.primaryIdBook,
       idBook: book.idBook,
       bookName: book.bookName,

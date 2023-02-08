@@ -38,12 +38,12 @@ app.post("/register", async (req, res) => {
         encryptedPassword = await bcrypt.hash(password, 1)
 
         // Create user in our database
-        // const user = await User.create({
-        //     firstname,
-        //     lastname,
-        //     username,
-        //     password: encryptedPassword
-        // })
+        const user = await User.create({
+            firstname,
+            lastname,
+            username,
+            password: encryptedPassword
+        })
 
         // Create token
         const token = jwt.sing(
@@ -152,12 +152,7 @@ app.post('/book/data', async (req, res) => {
       // *** INPUT
       console.log('req.body:', req.body)
       const { primaryIdBook, bookName, idBook, writer} = req.body
-         let bookHistoryobj = {
-            primaryIdBook,
-            bookName,
-            idBook,
-            writer
-        }
+         let bookHistoryobj = {}
             if(primaryIdBook){
                 bookHistoryobj = {
                 ...bookHistoryobj,

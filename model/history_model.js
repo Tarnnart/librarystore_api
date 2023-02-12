@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const moment = require('moment')
 
 const DateUse = moment().format()
-const statusUser = ['Rent', 'Avaliable']
+const statusUser = ['Rent', 'Finish']
 
 const historySchema = mongoose.Schema({
   firstname: { type: String },

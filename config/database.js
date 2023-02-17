@@ -1,10 +1,11 @@
 const mongoose =require('mongoose')
+const vars = require('./vars')
 
-const { MONGO_URI } = process.env
+const { mongouri } = vars
 
 exports.connect = () => {
 
-    mongoose.connect(MONGO_URI, {
+    mongoose.connect(mongouri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         // useCreateIndex: true,

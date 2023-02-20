@@ -2,9 +2,6 @@ const mongoose =require('mongoose')
 const vars = require('./vars')
 
 const { mongouri } = vars
-
-exports.connect = () => {
-
     mongoose.connect(mongouri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -19,4 +16,5 @@ exports.connect = () => {
         console.error(e)
         process.exit(1)
     })
-}
+
+module.exports = mongoose

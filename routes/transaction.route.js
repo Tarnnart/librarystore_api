@@ -11,4 +11,7 @@ router.route('/return')
 router.route('/book')
   .post(transaction.book)
 
+router.route('/transaction')
+  .post(transaction.transaction)
+
 module.exports = router

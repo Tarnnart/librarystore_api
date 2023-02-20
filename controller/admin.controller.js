@@ -1,5 +1,5 @@
-require('dotenv').config()
-require('../config/database').connect()
+// require('dotenv').config()
+const { mongouri }  = require('../config/vars')
 
 const express = require('express')
 const User = require('../model/user.model')
@@ -10,21 +10,16 @@ const jwt = require('jsonwebtoken')
 exports.register = async (req, res) => {
 
     try {
-  
         const { firstname, lastname, username, password, role } = req.body
-  
         if (!(firstname && lastname && username && password)) {
             res.status(400).send('All required')
         }
-  
         const oldUser = await User.findOne({ username })
-  
         if (oldUser) {
-            return res.status(409).send('User alredy exist. Please login')
+            return res.status(409).send({data :'User alredy exist. Please login'})
         }
         // Encrypt user password
         encryptedPassword = await bcrypt.hash(password, 10)
-  
         // Create user in our database
         const user = await User.create({
             firstname,
@@ -35,7 +30,7 @@ exports.register = async (req, res) => {
         })
   
         // return new user
-        res.status(201).json(user)
+        res.status(201).json({data: user})
   
     } catch (e) {
         console.log(e)
@@ -46,30 +41,81 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         const { username, password} = req.body
-  
         if (!(username && password)) {
             res.status(400).send('All input required')
         }
-  
         const user = await User.findOne({ username, role:'ADMIN' })
-  
         if (user && (await bcrypt.compare(password, user.password))) {
-  
+            const {
+                role,
+                _id,
+            } = user
             const token = jwt.sign(
-                {user_idid: user._id, username},
-                process.env.TOKEN_KEY,
+                {
+                    user_id: _id,
+                    username,
+                    role
+                },
+                mongouri.TOKEN_KEY,
                 {
                     expiresIn: '2h'
                 }
             )
             user.token = token
-  
-            res.status(200).json(user)
+            await User.updateOne(
+                {
+                    _id
+                },{
+                    token
+                }
+                )
+            return res.status(200).json({data : user})
         }
-  
-        res.status(400).send('Invalid Credentials')
-        
+       return res.status(400).json ({status : 'Done' , data : user}) 
     } catch (e) {
         console.log(e)
     }
 }
+
+// Book History (Admin)
+exports.history = async (req, res) => {
+    try {
+      console.log('req.body:', req.body)
+      const { username, primaryIdBook, bookName, idBook, writer} = req.body
+         let bookHistoryobj = {}
+            if(primaryIdBook){
+                bookHistoryobj = {
+                ...bookHistoryobj,
+                primaryIdBook,
+                }
+            }
+            if(bookName){
+                bookHistoryobj = {
+                ...bookHistoryobj,
+                bookName,
+                }
+            }
+            if(idBook){
+                bookHistoryobj = {
+                ...bookHistoryobj,
+                idBook,
+                }
+            }
+            if(writer){
+                bookHistoryobj = {
+                ...bookHistoryobj,
+                writer,
+                }
+            }
+    const bookData = await History.find(bookHistoryobj).exec()
+    // console.log(bookData)
+    const user = await User.findOne({ username, role:'ADMIN' })
+    if (!(user)) {
+      return res.status(495).send({data: 'Please try again, Username not found or you not ADMIN'})
+    }
+        // *** OUTPUT
+    return res.status(222).json({ success: true, data: bookData })
+    } catch (e) {
+      return res.status(404).json({ error: String(e) })
+    }
+  }

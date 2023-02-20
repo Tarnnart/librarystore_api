@@ -14,9 +14,6 @@ const BooksSchema = mongoose.Schema({
   publisher: { type: String },
   catagory: { type: String, enum: catagory },
   status: { type: String, enum: statusBook },
-  // totalBook: { type: Number },
 })
-
-// BooksSchema.index({ dateRegistration: Date() })
 
 module.exports = mongoose.model('bookData', BooksSchema)

@@ -1,6 +1,7 @@
 const express = require('express')
-const transaction = require('../controller/transaction.controller')
+
 const router = express.Router()
+const transaction = require('../controller/transaction.controller')
 
 router.route('/rent')
   .post(transaction.rent)

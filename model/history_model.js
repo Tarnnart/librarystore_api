@@ -1,5 +1,5 @@
-const mongoose = require('../config/database')
 const moment = require('moment')
+const mongoose = require('../config/database')
 
 const DateUse = moment().format()
 const statusUser = ['Rent', 'Finish']

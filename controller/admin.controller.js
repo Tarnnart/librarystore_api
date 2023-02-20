@@ -8,11 +8,10 @@ const jwt = require('jsonwebtoken')
 
 // Admin Register
 exports.register = async (req, res) => {
-
     try {
         const { firstname, lastname, username, password, role } = req.body
         if (!(firstname && lastname && username && password)) {
-            res.status(400).send('All required')
+            return res.status(400).send('All required')
         }
         const oldUser = await User.findOne({ username })
         if (oldUser) {
@@ -28,9 +27,8 @@ exports.register = async (req, res) => {
             password: encryptedPassword,
             role: 'ADMIN'
         })
-  
         // return new user
-        res.status(201).json({data: user})
+        return res.status(201).json({data: user})
   
     } catch (e) {
         console.log(e)

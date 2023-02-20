@@ -1,5 +1,5 @@
 const moment = require('moment')
-const mongoose = require('mongoose')
+const mongoose = require('../config/database')
 
 const DateUse = moment().format()
 const statusBook = ['Rent', 'Avaliable']

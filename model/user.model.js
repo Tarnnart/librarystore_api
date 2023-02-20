@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('../config/database')
 const moment = require('moment')
 
 const DateUse = moment().format()

@@ -1,6 +1,5 @@
-require('dotenv').config()
-require('../config/database').connect()
-
+// require('dotenv').config()
+const { mongouri }  = require('../config/vars')
 const express = require('express')
 const User = require('../model/user.model')
 const Book = require('../model/book_model')
@@ -12,7 +11,7 @@ const auth = require('../middleware/auth')
 const moment = require('moment')
 const DateUse = moment().format()
 
-function calcDate(dateRent, dateReturn) {
+calcDate = (dateRent, dateReturn) => {
   /*
   * calcDate() : Calculates the difference between two dates
   * @date1 : "First Date in the format MM-DD-YYYY"
@@ -72,38 +71,32 @@ function calcDate(dateRent, dateReturn) {
 }
 
 // Rent
-// Compass historydatas
-exports.rent = auth ,async (req, res) => {
+exports.rent = async (req, res) => {
     console.log('req.body:', req.body)
     const {
       username,
       idBook,
     } = req.body
-  
     const user = await User.findOne({ username, role:'USER' })
     const book = await Book.findOne({ idBook, status:'Avaliable' })
-
     if (!(user)) {
-      return res.status(490).send('Please try again, Username not found or you not USER')
+      return res.status(490).send({data : 'Please try again, Username not found or you not USER'})
     }
     if (!(book)) {
-      return res.status(491).send('Please try again, Book not already for rent')
+      return res.status(491).send({data : 'Please try again, Book not already for rent'})
     }
-
     // console.log(book)
     const currentBookRent = await History.find({ username, status:'Rent'})
     // ถ้ายืม id นี้แล้ว ไม่ให้ยืมซ้ำ
     if (currentBookRent != null && currentBookRent.length > 0) {
       const _currentBookRent =  currentBookRent.find(v => v.idBook === idBook)
       const __currentBookRent = currentBookRent.find(v => v.bookName === book.bookName)
-      // const ___currentBookRent = currentBookRent.find(v => v.username === History.username)
       if (_currentBookRent && __currentBookRent) {
-         return res.status(489).send('Please try again')
+         return res.status(489).send({data : 'Please try again'})
       }
-
      console.log(currentBookRent.length)
     if (currentBookRent.length >= 5) {
-      return res.status(492).send('Have already 5 book to rent, Please return for new rent book')
+      return res.status(492).send({data : 'Have already 5 book to rent, Please return for new rent book'})
     }
   }
   await book.updateOne({
@@ -121,14 +114,12 @@ exports.rent = auth ,async (req, res) => {
       bookName: book.bookName,
       dateRent: DateUse,
     }).save()
-  
     // const updateBookData = await BookRegistration.findOneAndUpdate({ status: 'Rent' })
-    return res.json(bookRent)
+    return res.status(202).json(bookRent)
   }
 
 // Return
-// Compass historydatas
-exports.return = auth, async (req, res) => {
+exports.return = async (req, res) => {
     console.log('req.body:', req.body)
   
     // Input
@@ -137,13 +128,13 @@ exports.return = auth, async (req, res) => {
     // Check role
     const user = await User.findOne({ role:'ADMIN' })
     if (!(user)) {
-       return res.status(200).json(user)
+       return res.status(200).json({data : user})
     }
 
     // Find data
     const returnDataHistory = await History.findOne({ username, idBook, status:'Rent' })
     if (!(returnDataHistory)){
-      return res.status(493).send('Please try again')
+      return res.status(493).send({data : 'Please try again'})
     } 
      const CalculatesDate = calcDate(returnDataHistory.dateRent, DateUse)
      await History.updateOne({ 
@@ -156,15 +147,22 @@ exports.return = auth, async (req, res) => {
         status : 'Finish',
        })
   
-    return res.json('Update Done')
+    return res.status(202).json({data : 'Update Done'})
   }
 
 // Book History (Admin)
-exports.book = auth, async (req, res) => {
+exports.book = async (req, res) => {
     try {
+      console.log(req.user)
       console.log('req.body:', req.body)
       const { username, primaryIdBook, bookName, idBook, writer} = req.body
          let bookHistoryobj = {}
+            if(username){
+                bookHistoryobj = {
+                ...bookHistoryobj,
+                username,
+                }
+            }
             if(primaryIdBook){
                 bookHistoryobj = {
                 ...bookHistoryobj,
@@ -193,11 +191,47 @@ exports.book = auth, async (req, res) => {
     // console.log(bookData)
     const user = await User.findOne({ username, role:'ADMIN' })
     if (!(user)) {
-      return res.status(495).send('Please try again, Username not found or you not ADMIN')
+      return res.status(495).send({data : 'Please try again, Username not found or you not ADMIN'})
     }
         // *** OUTPUT
-    return res.json({ success: true, data: bookData })
+    return res.status(202).json({ success: true, data: bookData })
     } catch (e) {
-      return res.json({ error: String(e) })
+      return res.status(408).json({ error: String(e) })
     }
   }
+
+// Transaction 
+exports.transaction = async (req, res) => {
+  try {
+    console.log('req.body:', req.body)
+    const { username, firstname, lastname } = req.body
+    let userHistoryobj = {}
+        if(username){
+          userHistoryobj = {
+         ...userHistoryobj,
+          username,
+          }
+      }
+       if(firstname){
+           userHistoryobj = {
+          ...userHistoryobj,
+          firstname,
+           }
+       }
+       if(lastname){
+          userHistoryobj = {
+          ...userHistoryobj,
+          lastname,
+           }
+       }
+       const userData = await History.find(userHistoryobj).exec()
+      //  const user = await User.findOne({role:'USER'})
+      //  if (!(user)) {
+      //    return res.status(495).send('Please try again, Username not found or you not ADMIN')
+      //   }
+      // *** OUTPUT
+      return res.status(202).json({ success: true, data: userData })
+   } catch (e) {
+      return res.status(408).json({ error: String(e) })
+    }
+}

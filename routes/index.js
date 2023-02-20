@@ -11,7 +11,7 @@ app.use(express.json())
 
 app.use('/admin', admin)
 app.use('/book', book)
-app.use('/transaction', transaction)
+app.use('/transaction',auth, transaction)
 app.use('/user', user)
 
 module.exports = app

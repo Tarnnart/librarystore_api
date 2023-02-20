@@ -21,16 +21,16 @@ exports.register = auth, async (req, res) => {
       } = req.body
       const user = await User.findOne({ username, role:'ADMIN' })
       if (!(user)) {
-        return res.status(495).send({data: 'Please try again, Username not found or you not ADMIN'})
+        return res.status(495).json({data: 'Please try again, Username not found or you not ADMIN'})
       }
       if (!(primaryIdBook && idBook)) {
-        return res.status(400).send({data : 'All required'})
+        return res.status(400).json({data : 'All required'})
     }
     const bookOldCheck = await Book.find({ primaryIdBook })
     if (bookOldCheck.length > 0) {
       const oldBook =  bookOldCheck.find((v) => v.idBook === idBook)
       if (oldBook && user) {
-          return res.status(409).send({data : 'Book alredy library. Please try again'})
+          return res.status(409).json({data : 'Book alredy library. Please try again'})
       }
       const _bookOldCheck = bookOldCheck[0]
       await new Book({

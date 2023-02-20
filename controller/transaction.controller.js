@@ -80,10 +80,10 @@ exports.rent = async (req, res) => {
     const user = await User.findOne({ username, role:'USER' })
     const book = await Book.findOne({ idBook, status:'Avaliable' })
     if (!(user)) {
-      return res.status(490).send({data : 'Please try again, Username not found or you not USER'})
+      return res.status(490).json({data : 'Please try again, Username not found or you not USER'})
     }
     if (!(book)) {
-      return res.status(491).send({data : 'Please try again, Book not already for rent'})
+      return res.status(491).json({data : 'Please try again, Book not already for rent'})
     }
     // console.log(book)
     const currentBookRent = await History.find({ username, status:'Rent'})
@@ -92,11 +92,11 @@ exports.rent = async (req, res) => {
       const _currentBookRent =  currentBookRent.find(v => v.idBook === idBook)
       const __currentBookRent = currentBookRent.find(v => v.bookName === book.bookName)
       if (_currentBookRent && __currentBookRent) {
-         return res.status(489).send({data : 'Please try again'})
+         return res.status(489).json({data : 'Please try again'})
       }
      console.log(currentBookRent.length)
     if (currentBookRent.length >= 5) {
-      return res.status(492).send({data : 'Have already 5 book to rent, Please return for new rent book'})
+      return res.status(492).json({data : 'Have already 5 book to rent, Please return for new rent book'})
     }
   }
   await book.updateOne({
@@ -134,7 +134,7 @@ exports.return = async (req, res) => {
     // Find data
     const returnDataHistory = await History.findOne({ username, idBook, status:'Rent' })
     if (!(returnDataHistory)){
-      return res.status(493).send({data : 'Please try again'})
+      return res.status(493).json({data : 'Please try again'})
     } 
      const CalculatesDate = calcDate(returnDataHistory.dateRent, DateUse)
      await History.updateOne({ 
@@ -191,7 +191,7 @@ exports.book = async (req, res) => {
     // console.log(bookData)
     const user = await User.findOne({ username, role:'ADMIN' })
     if (!(user)) {
-      return res.status(495).send({data : 'Please try again, Username not found or you not ADMIN'})
+      return res.status(495).json({data : 'Please try again, Username not found or you not ADMIN'})
     }
         // *** OUTPUT
     return res.status(202).json({ success: true, data: bookData })
@@ -227,7 +227,7 @@ exports.transaction = async (req, res) => {
        const userData = await History.find(userHistoryobj).exec()
       //  const user = await User.findOne({role:'USER'})
       //  if (!(user)) {
-      //    return res.status(495).send('Please try again, Username not found or you not ADMIN')
+      //    return res.status(495).json('Please try again, Username not found or you not ADMIN')
       //   }
       // *** OUTPUT
       return res.status(202).json({ success: true, data: userData })

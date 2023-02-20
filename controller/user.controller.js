@@ -1,5 +1,5 @@
 // require('dotenv').config()
-const { mongouri }  = require('../config/vars')
+const { tokenKey }  = require('../config/vars')
 
 const express = require('express')
 const User = require('../model/user.model')
@@ -16,11 +16,11 @@ exports.register = async (req, res) => {
     try {
         const { firstname, lastname, username, password, role } = req.body
         if (!(firstname && lastname && username && password)) {
-           return res.status(400).send({data : 'All required'})
+           return res.status(400).json({data : 'All required'})
         }
         const oldUser = await User.findOne({ username })
         if (oldUser) {
-            return res.status(409).send({ data : 'User alredy exist. Please login'})
+            return res.status(409).json({ data : 'User alredy exist. Please login'})
         }
         // Encrypt user password
         encryptedPassword = await bcrypt.hash(password, 10)
@@ -44,7 +44,7 @@ exports.login = async (req, res) => {
     try {
         const { username, password} = req.body
         if (!(username && password)) {
-          return  res.status(400).send({data : 'All input required'})
+          return  res.status(400).json({data : 'All input required'})
         }
         const user = await User.findOne({ username, role:'USER' })
         if (user && (await bcrypt.compare(password, user.password))) {
@@ -58,7 +58,7 @@ exports.login = async (req, res) => {
                     username,
                     role
                 },
-                mongouri.TOKEN_KEY,
+                tokenKey,
                 {
                     expiresIn: '2h'
                 }

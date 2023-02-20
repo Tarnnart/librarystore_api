@@ -15,7 +15,7 @@ const DateUse = moment().format()
 const app = express()
 app.use(express.json())
 
-// User Register
+// User Register*
 app.post("/register/user", async (req, res) => {
 
     try {
@@ -51,7 +51,7 @@ app.post("/register/user", async (req, res) => {
     }
 })
 
-// Admin Register
+// Admin Register*
 app.post("/register/admin", async (req, res) => {
 
   try {
@@ -87,7 +87,7 @@ app.post("/register/admin", async (req, res) => {
   }
 })
     
-// User login
+// User login*
 app.post("/login/user", async (req, res) => {
     try {
         const { username, password} = req.body
@@ -119,7 +119,7 @@ app.post("/login/user", async (req, res) => {
     }
 })
 
-// Admin login
+// Admin login*
 app.post("/login/admin", async (req, res) => {
   try {
       const { username, password} = req.body
@@ -156,7 +156,7 @@ app.post('/nextpage', auth, (req, res) => {
     res.status(200).send('Welcome to my world')
 })
 
-// Registration book
+// Registration book*
 app.post('/register/book', auth, async (req, res) => {
     try {
       // *** INPUT
@@ -203,7 +203,7 @@ app.post('/register/book', auth, async (req, res) => {
     }
   })
   
-// Book History (Admin)
+// Book History (Admin)*
 app.post('/transaction/book',auth, async (req, res) => {
     try {
       console.log('req.body:', req.body)
@@ -246,7 +246,7 @@ app.post('/transaction/book',auth, async (req, res) => {
     }
   })
 
-// User History
+// User History*
 app.post('/transaction/user/admin', auth, async (req, res) => {
   try {
     console.log('req.body:', req.body)

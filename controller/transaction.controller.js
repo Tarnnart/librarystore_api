@@ -1,5 +1,5 @@
 const moment = require('moment')
-const User = require('../model/user.model')
+const User = require('../model/user_model')
 const Book = require('../model/book_model')
 const History = require('../model/history_model')
 

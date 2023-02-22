@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 // const express = require('express')
 const { tokenKey } = require('../config/vars')
 
-const User = require('../model/user.model')
+const User = require('../model/user_model')
 const History = require('../model/history_model')
 
 // Admin Register

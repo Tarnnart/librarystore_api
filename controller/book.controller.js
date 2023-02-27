@@ -13,13 +13,14 @@ exports.register = async (req, res) => {
     // *** INPUT
     console.log('req.body:', req.body)
     const {
-      username,
       primaryIdBook,
       idBook,
       status,
     } = req.body
-    const user = await User.findOne({ username, role: 'ADMIN' }).lean()
-    if (req.user.role !== 'ADMIN') {
+
+    // add ข้อมูลหนังสือต่่างๆ ถ้ายังไม่มีของเดิม
+    const user = await User.findOne({ role: 'ADMIN' }).lean()
+    if (!req.user || (req.user.role !== 'ADMIN')) {
       return res.status(209).json({ data: 'Please try again, Username not found or you not ADMIN' })
     }
     if (!(primaryIdBook && idBook)) {
@@ -43,7 +44,17 @@ exports.register = async (req, res) => {
         status,
       }).save()
     }
-    return res.status(202).json({ data: 'done' }) // Response message
+    // await Book.create({
+    //   primaryIdBook,
+    //   idBook,
+    //   bookName,
+    //   dateRegistration: DateUse,
+    //   writer,
+    //   publisher,
+    //   catagory,
+    //   status,
+    // })
+    return res.status(202).json({ status: 'done', data: Book }) // Response message
   } catch (e) {
     console.log(e)
     return res.status(404).json({ data: 'failed' }) // Response message

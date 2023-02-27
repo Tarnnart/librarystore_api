@@ -68,8 +68,8 @@ exports.login = async (req, res) => {
         {
           _id,
         }, {
-          token,
-        },
+        token,
+      },
       )
       return res.status(200).json({ status: 'Done', data: user })
     }
@@ -84,6 +84,10 @@ exports.history = async (req, res) => {
   try {
     console.log('req.body:', req.body)
     const { username, firstname, lastname } = req.body
+    console.log(req.user)
+    if (!req.user || (req.user.role !== 'USER')) {
+      return res.status(209).json({ data: 'Please login' })
+    }
     let userHistoryobj = {}
     if (username) {
       userHistoryobj = {
@@ -104,9 +108,6 @@ exports.history = async (req, res) => {
       }
     }
     const userData = await History.find(userHistoryobj).exec()
-    if (req.user.role !== 'USER') {
-      return res.status(209).json({ data: 'Please try agin' })
-    }
     // *** OUTPUT
     return res.status(202).json({ success: true, data: userData })
   } catch (e) {

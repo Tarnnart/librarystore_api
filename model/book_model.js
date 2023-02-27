@@ -13,7 +13,7 @@ const BooksSchema = mongoose.Schema({
   writer: { type: String },
   publisher: { type: String },
   catagory: { type: String, enum: catagory },
-  status: { type: String, enum: statusBook },
+  status: { type: String, enum: statusBook, default: 'Avaliable' },
 })
 
 module.exports = mongoose.model('bookData', BooksSchema)

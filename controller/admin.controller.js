@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
       firstname, lastname, username, password,
     } = req.body
     if (!(firstname && lastname && username && password)) {
-      return res.status(400).json('All required')
+      return res.status(400).json({ data: 'Please try agin' })
     }
     const oldUser = await User.findOne({ username }).lean()
     if (oldUser) {
@@ -42,7 +42,7 @@ exports.login = async (req, res) => {
   try {
     const { username, password } = req.body
     if (!(username && password)) {
-      res.status(400).json('All input required')
+      res.status(400).json({ data: 'Please try agin' })
     }
     const user = await User.findOne({ username, role: 'ADMIN' }).lean()
     if (user && (await bcrypt.compare(password, user.password))) {
@@ -66,8 +66,8 @@ exports.login = async (req, res) => {
         {
           _id,
         }, {
-          token,
-        },
+        token,
+      },
       )
       return res.status(200).json({ data: user })
     }
@@ -82,8 +82,15 @@ exports.history = async (req, res) => {
   try {
     console.log('req.body:', req.body)
     const {
-      username, primaryIdBook, bookName, idBook, writer,
+      primaryIdBook, bookName, idBook, writer,
     } = req.body
+    const user = await User.findOne({ role: 'ADMIN' }).lean()
+    if (!(user)) {
+      return res.status(495).json({ data: 'Please try again, Username not found or you not ADMIN' })
+    }
+    if (!req.user || (req.user.role !== 'ADMIN')) {
+      return res.status(493).json({ data: 'Please try again' })
+    }
     let bookHistoryobj = {}
     if (primaryIdBook) {
       bookHistoryobj = {
@@ -111,13 +118,6 @@ exports.history = async (req, res) => {
     }
     const bookData = await History.find(bookHistoryobj).exec()
     // console.log(bookData)
-    const user = await User.findOne({ username, role: 'ADMIN' }).lean()
-    if (req.user.role !== 'ADMIN') {
-      return res.status(493).json({ data: 'Please try again' })
-    }
-    if (!(user)) {
-      return res.status(495).json({ data: 'Please try again, Username not found or you not ADMIN' })
-    }
     // *** OUTPUT
     return res.status(222).json({ success: true, data: bookData })
   } catch (e) {

@@ -5,67 +5,89 @@ const History = require('../model/history_model')
 
 const DateUse = moment().format()
 
-const calcDate = (dateRent, dateReturn) => {
-  /*
-  * calcDate() : Calculates the difference between two dates
-  * @date1 : "First Date in the format MM-DD-YYYY"
-  * @date2 : "Second Date in the format MM-DD-YYYY"
-  * return : Array
-  */
-  // new date instance
-  const DTdate1 = new Date(dateRent)
-  const DTdate2 = new Date(dateReturn)
+// const calcDate = (dateRent, dateReturn) => {
+//   /*
+//   * calcDate() : Calculates the difference between two dates
+//   * @date1 : "First Date in the format MM-DD-YYYY"
+//   * @date2 : "Second Date in the format MM-DD-YYYY"
+//   * return : Array
+//   */
+//   // new date instance
+//   const DTdate1 = new Date(dateRent)
+//   const DTdate2 = new Date(dateReturn)
 
-  // Get the Timestamp
-  const date1TimeStamp = DTdate1.getTime()
-  const date2TimeStamp = DTdate2.getTime()
+//   // Get the Timestamp
+//   const date1TimeStamp = DTdate1.getTime()
+//   const date2TimeStamp = DTdate2.getTime()
 
-  let calc
+//   let calc
 
-  // Check which timestamp is greater
-  if (date1TimeStamp > date2TimeStamp) {
-    calc = new Date(date1TimeStamp - date2TimeStamp)
+//   // Check which timestamp is greater
+//   if (date1TimeStamp > date2TimeStamp) {
+//     calc = new Date(date1TimeStamp - date2TimeStamp)
+//   } else {
+//     calc = new Date(date2TimeStamp - date1TimeStamp)
+//   }
+
+//   // Retrieve the date, month and year
+//   const calcFormatTmp = `${calc.getDate()}-${calc.getMonth() + 1}-${calc.getFullYear()}`
+//   // Convert to an array and store
+//   const calcFormat = calcFormatTmp.split('-')
+//   // Subtract each member of our array from the default date
+//   const daysPassed = Number(Math.abs(calcFormat[0]) - 1)
+//   const monthsPassed = Number(Math.abs(calcFormat[1]) - 1)
+//   const yearsPassed = Number(Math.abs(calcFormat[2]) - 1970)
+
+//   // Set up custom text
+//   const yrsTxt = ['year', 'years']
+//   const mnthsTxt = ['month', 'months']
+//   const daysTxt = ['day', 'days']
+
+//   // Convert to days and sum together
+//   const totalDays = (yearsPassed * 365) + (monthsPassed * 30.417) + daysPassed
+//   const penalty = totalDays - 3
+//   const penaltySum = penalty * 20
+//   console.log(penaltySum)
+
+//   // display result with custom text
+//   // eslint-disable-next-line no-nested-ternary, no-unused-vars
+//   const result = ((yearsPassed === 1) ? `${yearsPassed} ${yrsTxt[0]} ` : (yearsPassed > 1)
+//     ? `${yearsPassed} ${yrsTxt[1]} ` : '')
+//   // eslint-disable-next-line no-nested-ternary
+//   + ((monthsPassed === 1) ? `${monthsPassed} ${mnthsTxt[0]}` : (monthsPassed > 1)
+//     ? `${monthsPassed} ${mnthsTxt[1]} ` : '')
+//   // eslint-disable-next-line no-nested-ternary
+//   + ((daysPassed === 1) ? `${daysPassed} ${daysTxt[0]}` : (daysPassed > 1)
+//     ? `${daysPassed} ${daysTxt[1]}` : '')
+
+//   // return the result
+//   return {
+//     total_days: Math.round(totalDays),
+//     // result: result.trim(),
+//   }
+// }
+
+const calDate = (date1, date2) => {
+  date1.getTime()
+  date2.getTime()
+
+  const diffDate = Math.floor((date2 - date1) / (24 * 3600 * 1000))
+  // const D = date2-date1
+
+  if (diffDate <= 3) {
+    return 0
   } else {
-    calc = new Date(date2TimeStamp - date1TimeStamp)
+    return (diffDate - 3) * 20
   }
-
-  // Retrieve the date, month and year
-  const calcFormatTmp = `${calc.getDate()}-${calc.getMonth() + 1}-${calc.getFullYear()}`
-  // Convert to an array and store
-  const calcFormat = calcFormatTmp.split('-')
-  // Subtract each member of our array from the default date
-  const daysPassed = Number(Math.abs(calcFormat[0]) - 1)
-  const monthsPassed = Number(Math.abs(calcFormat[1]) - 1)
-  const yearsPassed = Number(Math.abs(calcFormat[2]) - 1970)
-
-  // Set up custom text
-  const yrsTxt = ['year', 'years']
-  const mnthsTxt = ['month', 'months']
-  const daysTxt = ['day', 'days']
-
-  // Convert to days and sum together
-  const totalDays = (yearsPassed * 365) + (monthsPassed * 30.417) + daysPassed
-  const penalty = totalDays - 3
-  const penaltySum = penalty * 20
-  console.log(penaltySum)
-
-  // display result with custom text
-  // eslint-disable-next-line no-nested-ternary, no-unused-vars
-  const result = ((yearsPassed === 1) ? `${yearsPassed} ${yrsTxt[0]} ` : (yearsPassed > 1)
-    ? `${yearsPassed} ${yrsTxt[1]} ` : '')
-  // eslint-disable-next-line no-nested-ternary
-  + ((monthsPassed === 1) ? `${monthsPassed} ${mnthsTxt[0]}` : (monthsPassed > 1)
-    ? `${monthsPassed} ${mnthsTxt[1]} ` : '')
-  // eslint-disable-next-line no-nested-ternary
-  + ((daysPassed === 1) ? `${daysPassed} ${daysTxt[0]}` : (daysPassed > 1)
-    ? `${daysPassed} ${daysTxt[1]}` : '')
-
-  // return the result
-  return {
-    total_days: Math.round(totalDays),
-    // result: result.trim(),
-  }
+  // console.log(diffDate)
 }
+const date1 = new Date('yyyy-mm-dd')
+const date2 = new Date('yyyy-mm-dd')
+const d = calDate(date1, date2)
+console.log(d)
+
+// var a = Math.abs(4)
+// const diffDate = Math.floor((((date2-date1)/(24*3600*1000))-3)*20)
 
 // Rent
 exports.rent = async (req, res) => {
@@ -74,8 +96,8 @@ exports.rent = async (req, res) => {
     username,
     idBook,
   } = req.body
-  const user = await User.findOne({ username, role: 'USER' }).lean()
-  if (req.user.role !== 'ADMIN') {
+  const user = await User.findOne({ role: 'USER' }).lean()
+  if (!req.user || (req.user.role !== 'ADMIN')) {
     return res.status(493).json({ data: 'Please try again' })
   }
   const book = await Book.findOne({ idBook, status: 'Avaliable' }).lean()
@@ -99,7 +121,7 @@ exports.rent = async (req, res) => {
       return res.status(492).json({ data: 'Have already 5 book to rent, Please return for new rent book' })
     }
   }
-  await book.updateOne({
+  await Book.updateOne({
     idBook,
     status: 'Avaliable',
   }, {
@@ -124,76 +146,25 @@ exports.return = async (req, res) => {
   // Input
   const { username, idBook } = req.body
   // Check role
-  if (req.user.role !== 'ADMIN') {
-    return res.status(209).json({ data: 'Please try agin' })
+  if (!req.user || (req.user.role !== 'ADMIN')) {
+    return res.status(493).json({ data: 'Please try again' })
   }
   // Find data
   const returnDataHistory = await History.findOne({ username, idBook, status: 'Rent' }).lean()
   if (!(returnDataHistory)) {
     return res.status(493).json({ data: 'Please try again' })
   }
-  const CalculatesDate = calcDate(returnDataHistory.dateRent, DateUse)
+  const CalculatesDate = calDate(returnDataHistory.dateRent, DateUse)
   await History.updateOne({
     username,
     idBook,
     status: 'Rent',
   }, {
     dateEnd: DateUse,
-    penalty: CalculatesDate.calcDate,
+    penalty: CalculatesDate.calDate,
     status: 'Finish',
   })
   return res.status(202).json({ data: 'Update Done' })
-}
-
-// Book History (Admin)
-exports.book = async (req, res) => {
-  try {
-    console.log(req.user)
-    console.log('req.body:', req.body)
-    const {
-      username, primaryIdBook, bookName, idBook, writer,
-    } = req.body
-    let bookHistoryobj = {}
-    if (username) {
-      bookHistoryobj = {
-        ...bookHistoryobj,
-        username,
-      }
-    }
-    if (primaryIdBook) {
-      bookHistoryobj = {
-        ...bookHistoryobj,
-        primaryIdBook,
-      }
-    }
-    if (bookName) {
-      bookHistoryobj = {
-        ...bookHistoryobj,
-        bookName,
-      }
-    }
-    if (idBook) {
-      bookHistoryobj = {
-        ...bookHistoryobj,
-        idBook,
-      }
-    }
-    if (writer) {
-      bookHistoryobj = {
-        ...bookHistoryobj,
-        writer,
-      }
-    }
-    const bookData = await History.find(bookHistoryobj).exec()
-    // console.log(bookData)
-    if (req.user.role !== 'ADMIN') {
-      return res.status(209).json({ data: 'Please try agin' })
-    }
-    // *** OUTPUT
-    return res.status(202).json({ success: true, data: bookData })
-  } catch (e) {
-    return res.status(408).json({ error: String(e) })
-  }
 }
 
 // Transaction
@@ -202,7 +173,11 @@ exports.transaction = async (req, res) => {
     console.log('req.body:', req.body)
     const { username, firstname, lastname } = req.body
     if (req.user.role !== 'ADMIN') {
-      return res.status(209).json({ data: 'Please try agin' })
+      // return res.status(209).json({ data: 'Please try agin' })
+      return res.status(200).json({
+        code: 201,
+        message: 'Please try again',
+      })
     }
     let userHistoryobj = {}
     if (username) {
@@ -227,6 +202,10 @@ exports.transaction = async (req, res) => {
     // *** OUTPUT
     return res.status(202).json({ success: true, data: userData })
   } catch (e) {
-    return res.status(408).json({ error: String(e) })
+    return res.status(500).json({
+      code: 100,
+      message: 'error',
+      error: String(e),
+    })
   }
 }

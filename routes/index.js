@@ -8,9 +8,9 @@ const user = require('./user.route')
 const app = express()
 app.use(express.json())
 
-app.use('/admin', admin)
-app.use('/book', book)
-app.use('/transaction', auth, transaction)
-app.use('/user', user)
+app.use('/admin', auth.optional, admin)
+app.use('/book', auth.optional, book)
+app.use('/transaction', auth.optional, transaction)
+app.use('/user', auth.optional, user)
 
 module.exports = app
